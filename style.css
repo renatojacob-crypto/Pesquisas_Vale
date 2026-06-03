@@ -46,6 +46,7 @@ body {
     font-size: 32px;
     font-weight: 700;
     margin-bottom: 10px;
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
 }
 
 .portal-header p {
@@ -53,6 +54,7 @@ body {
     font-size: 18px;
     opacity: 0.9;
     font-weight: 300;
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
 }
 
 /* Área Principal */
