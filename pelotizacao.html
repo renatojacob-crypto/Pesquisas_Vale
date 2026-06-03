@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa: Oficina de Robótica - Pelotização</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="portal-header">
+        <div class="header-content">
+            <h1>Avaliação da Oficina</h1>
+            <p>Robótica - Pelotização Vale</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="nav-back">
+            <a href="index.html" class="btn-voltar">← Voltar ao Portal</a>
+        </div>
+
+        <div class="form-group animate-fade profile-selector">
+            <label>Selecione seu Perfil:</label>
+            <div class="profile-radio-group">
+                <label class="profile-radio">
+                    <input type="radio" name="perfil" value="Professor">
+                    <span class="radio-custom"></span>
+                    Professor(a)
+                </label>
+                <label class="profile-radio">
+                    <input type="radio" name="perfil" value="Aluno">
+                    <span class="radio-custom"></span>
+                    Aluno(a)
+                </label>
+            </div>
+        </div>
+
+        <form id="form-avaliacao" class="hidden">
+            <div id="area-perguntas"></div>
+            
+            <div id="msg-erro" class="hidden error-message">
+                Por favor, responda todas as perguntas destacadas em vermelho antes de enviar.
+            </div>
+
+            <button type="submit" id="btn-enviar">Enviar Respostas</button>
+        </form>
+        
+        <div id="mensagem-sucesso" class="hidden text-center animate-fade">
+            <div class="icon-success">✓</div>
+            <h3>Obrigado pela sua participação!</h3>
+            <p>Suas respostas são muito importantes para nós e foram registradas com sucesso.</p>
+            <button id="btn-reiniciar" class="card-btn">Responder Novamente</button>
+        </div>
+    </main>
+    <script src="pelotizacao.js"></script>
+</body>
+</html>
