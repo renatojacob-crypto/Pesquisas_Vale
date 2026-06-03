@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação de Oficinas - Vale</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h2>Avaliação da Oficina</h2>
+            <p>Selecione seu perfil para iniciar o formulário de feedback</p>
+        </header>
+        
+        <div class="form-group animate-fade">
+            <label for="perfil">Seu Perfil:</label>
+            <select id="perfil">
+                <option value="" disabled selected>-- Escolha uma opção --</option>
+                <option value="Professor">Professor</option>
+                <option value="Aluno">Aluno</option>
+            </select>
+        </div>
+
+        <form id="form-avaliacao" class="hidden">
+            <div id="area-perguntas"></div>
+            <button type="submit" id="btn-enviar">Enviar Respostas</button>
+        </form>
+        
+        <div id="mensagem-sucesso" class="hidden text-center animate-fade">
+            <div class="icon-success">✓</div>
+            <h3>Obrigado!</h3>
+            <p>Suas respostas foram gravadas com sucesso no sistema gerencial.</p>
+            <button id="btn-reiniciar">Responder Novamente</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
