@@ -2,12 +2,177 @@
 const URL_API_GOOGLE = 'https://script.google.com/macros/s/AKfycbwfhNMh57LsfXFghLYVQvjGQKs8EQfoWDyVL-1VPHN45DnTkt3sEl4KiS3EhvHJisM6Tg/exec';
 
 let dadosCompletos = { Professor: [], Aluno: [] };
-let graficosAtivos = []; // Para destruir os gráficos antigos antes de recriar
+let graficosAtivos = []; 
+
+// --- MAPEAMENTO EXATO DAS PERGUNTAS DE CADA OFICINA ---
+const dicionarioPerguntas = {
+    "Robótica - Pelotização": {
+        Professor: [
+            "1. É a primeira vez que você participa de alguma atividade com a Vale por meio do Programa Vale nas Escolas?",
+            "2. A atividade contribuiu para o desenvolvimento educacional dos alunos?",
+            "3. A iniciativa contribui e complementa a proposta pedagógica da escola?",
+            "4. Você indicaria esta atividade para outra escola ou para outros(as) professores(as)?",
+            "5. A visita trouxe novos conhecimentos sobre a mineração e sua importância na nossa vida cotidiana?",
+            "6. Você considera que, por meio desta atividade, você conheceu melhor a Vale?",
+            "7. Após a experiência desta visita, a imagem que você tem da Vale:",
+            "8. A Vale se preocupa com os impactos ambientais",
+            "9. A Vale utiliza os recursos naturais de forma consciente",
+            "10. A Vale promove o desenvolvimento social e o bem-estar da população",
+            "11. A Vale incentiva e/ou apoia iniciativas culturais",
+            "12. A Vale investe em projetos sociais",
+            "13. De 1 a 10, qual a sua avaliação geral da visita?",
+            "14. Deixe-nos um recado."
+        ],
+        Aluno: [
+            "1. É a primeira vez que você participa de alguma atividade com a Vale?",
+            "2. Você considera que essa atividade contribuiu para o seu desenvolvimento?",
+            "3. Você indicaria esta atividade para um(a) amigo(a)?",
+            "4. A visita trouxe novos conhecimentos sobre a mineração e sua importância na nossa vida cotidiana?",
+            "5. Você considera que, por meio desta atividade, você conheceu melhor a Vale?",
+            "6. Após a experiência desta visita, a imagem que você tem da Vale:",
+            "7. A Vale se preocupa com os impactos ambientais",
+            "8. A Vale utiliza os recursos naturais de forma consciente",
+            "9. A Vale promove o desenvolvimento social e o bem-estar da população",
+            "10. A Vale incentiva e/ou apoia iniciativas culturais",
+            "11. A Vale investe em projetos sociais",
+            "12. De 1 a 10, qual nota você daria para essa visita?",
+            "13. Deixe-nos um recado."
+        ]
+    },
+    "Robótica - Logística": {
+        Professor: [
+            "1. É a primeira vez que você participa de alguma atividade com a Vale por meio do Programa Vale nas Escolas?",
+            "2. A atividade contribuiu para o desenvolvimento educacional dos alunos?",
+            "3. A iniciativa contribui e complementa a proposta pedagógica da escola?",
+            "4. Você indicaria esta atividade para outra escola ou para outros(as) professores(as)?",
+            "5. A visita trouxe novos conhecimentos sobre a mineração e sua importância na nossa vida cotidiana?",
+            "6. Você considera que, por meio desta atividade, você conheceu melhor a Vale?",
+            "7. Após a experiência desta visita, a imagem que você tem da Vale:",
+            "8. A Vale se preocupa com os impactos ambientais",
+            "9. A Vale utiliza os recursos naturais de forma consciente",
+            "10. A Vale promove o desenvolvimento social e o bem-estar da população",
+            "11. A Vale incentiva e/ou apoia iniciativas culturais",
+            "12. A Vale investe em projetos sociais",
+            "13. De 1 a 10, qual a sua avaliação geral da visita?",
+            "14. Deixe-nos um recado."
+        ],
+        Aluno: [
+            "1. É a primeira vez que você participa de alguma atividade com a Vale?",
+            "2. Você considera que essa atividade contribuiu para o seu desenvolvimento?",
+            "3. Você indicaria esta atividade para um(a) amigo(a)?",
+            "4. A visita trouxe novos conhecimentos sobre a mineração e sua importância na nossa vida cotidiana?",
+            "5. Você considera que, por meio desta atividade, você conheceu melhor a Vale?",
+            "6. Após a experiência desta visita, a imagem que você tem da Vale:",
+            "7. A Vale se preocupa com os impactos ambientais",
+            "8. A Vale utiliza os recursos naturais de forma consciente",
+            "9. A Vale promove o desenvolvimento social e o bem-estar da população",
+            "10. A Vale incentiva e/ou apoia iniciativas culturais",
+            "11. A Vale investe em projetos sociais",
+            "12. De 1 a 10, qual nota você daria para essa visita?",
+            "13. Deixe-nos um recado."
+        ]
+    },
+    "Robótica - Mineração": {
+        Professor: [
+            "1. Sua opinião sobre a Roda de Conversa (Domínio, Clareza e Objetividade):",
+            "2. A roda de Conversa e a Oficina foram capaz de gerar interesse e esclarecimento de dúvidas:",
+            "3. Qual a sua opinião sobre as missões robóticas?",
+            "4. Esta é a sua primeira experiência com a Vale?",
+            "5. Você entende que a oficina contribui para estimular novos conhecimentos sobre a mineração e sua importância em nossa vida diária?",
+            "6. A iniciativa contribui e complementa a proposta pedagógica da escola?",
+            "7. Você acredita que essa experiência contribuiu de alguma forma para o desenvolvimento do aluno?",
+            "8. Você indicaria a oficina para outra escola/professor?",
+            "9. A carga horária foi suficiente?",
+            "10. A oficina esclareceu o funcionamento dos controles ambientais aplicados no processo produtivo?",
+            "11. Após está oficina, a imagem que eu tenho da Vale:",
+            "12. De 0 a 10 qual a sua avaliação geral na Oficina:",
+            "13. Dê o sei Depoimento e/ou Sugestões:"
+        ],
+        Aluno: [
+            "1. Sua opinião sobre a Roda de Conversa (Domínio, Clareza e Objetividade):",
+            "2. A roda de Conversa e a Oficina foram capaz de gerar interesse e esclarecimento de dúvidas:",
+            "3. Qual a sua opinião sobre as missões robóticas?",
+            "4. Esta é a sua primeira experiência com a Vale?",
+            "5. A oficina trouxe novos conhecimentos sobre a mineração e sua importância em nossa vida diária?",
+            "6. A oficina esclareceu o funcionamento dos controles ambientais aplicados no processo produtivo?",
+            "7. Você indicaria está atividade para um amigo (a)?",
+            "8. A carga horária foi suficiente?",
+            "9. Após está oficina, a imagem que eu tenho da Vale?",
+            "10. Você entende que o conhecimento compartilhado nessa experiência pode agregar e contribuir com o conteúdo de sala de aula? Como?",
+            "11. De 0 a 10 qual a sua avaliação geral na Oficina:",
+            "12. Dê o sei Depoimento e/ou Sugestões:"
+        ]
+    },
+    "Robótica/Maker - PAEBM": {
+        Professor: [
+            "1. Dos riscos abaixo, quais você acha mais prováveis de acontecer no seu município?",
+            "2. Com qual frequência sua escola recebe Projetos externos não formais?",
+            "3. O tema Segurança: riscos e emergências fazem parte da grade curricular da sua escola?",
+            "4. Você acha pertinente introduzir e debater esse tema na escola?",
+            "5. Justifique sua resposta.",
+            "6. Você considera as ferramentas lúdicas e participativas importantes para o aprendizado nessa faixa etária?",
+            "7. Justifique sua resposta.",
+            "8. Residindo em um município minerador, você já participou de Simulado de Emergência de Barragens de Mineração?",
+            "9. Na sua escola, como você avalia a organização do Projeto?",
+            "10. E o conteúdo?",
+            "11. A duração da oficina (2h) está adequada à dinâmica da escola e ao processo de ensino aprendizagem junto a alunos e professores?",
+            "12. De modo geral, o Projeto foi importante para você e sua escola?",
+            "13. Classifique seu grau de participação em relação a oficina que realizou?",
+            "14. Você teria sugestões e/ou críticas para enriquecer o Projeto? Conte para nós!"
+        ],
+        Aluno: [
+            "1. Dos riscos abaixo, quais você acha mais prováveis de acontecer no seu município?",
+            "2. Quando você circula por seu município costuma observar as Placas de Sinalização?",
+            "3. Antes deste Projeto, você sabia para que servem as Placas de Sinalização?",
+            "4. Na sua escola, já conversaram com você sobre como evitar riscos e acidentes e como fazer no caso de emergências?",
+            "5. Antes desse Projeto, você tinha conhecimentos sobre o processo de mineração?",
+            "6. Você mora em um município minerador. Já conhecia os Simulado de Emergência de Barragens de Mineração?",
+            "7. Já participou de algum Simulado?",
+            "8. Se sim, o que achou? Se não, por quê?",
+            "9. De modo geral, o Projeto de Robótica foi importante para você?",
+            "10. Justifique sua resposta",
+            "11. Conte para nós o que mais gostou no Projeto:",
+            "12. Você tem sugestões para melhoria do Projeto Dona Sirene? Quais?",
+            "13. Em qual ano que você estuda?",
+            "14. Classifique seu grau de participação em relação a oficina que realizou?"
+        ]
+    },
+    "StoryStarter - Sustentabilidade": {
+        Professor: [
+            "1. Roda de Conversa (domínio, clareza e objetividade):",
+            "2. Capacidade de gerar interesse e esclarecimento de dúvidas:",
+            "3. Didática nos desafios para desenvolver a oficina:",
+            "4. É a primeira experiência com a Vale?",
+            "5. A oficina trouxe novos conhecimentos sobre a mineração e sua importância em nossa vida diária?",
+            "6. A iniciativa contribui e complementa a proposta pedagógica da escola?",
+            "7. Você acredita que essa experiência contribuiu de alguma forma para o desenvolvimento do aluno?",
+            "8. Você indicaria a oficina para outra escola/professor?",
+            "9. A carga horária foi suficiente?",
+            "10. A carga horária foi suficiente?",
+            "11. A oficina contribuiu com novos conhecimentos sobre o tema Sustentabilidade?",
+            "12. Após está oficina, a imagem que eu tenho da Vale:",
+            "13. De 0 a 10 qual a sua avaliação geral na Oficina:",
+            "14. Depoimento e Sugestões"
+        ],
+        Aluno: [
+            "1. Roda de Conversa (domínio, clareza e objetividade):",
+            "2. Capacidade de gerar interesse e esclarecimento de dúvidas:",
+            "3. Desafios para desenvolver as oficinas:",
+            "4. É a primeira experiência com a Vale?",
+            "5. A oficina trouxe novos conhecimentos sobre a mineração e sua importância em nossa vida diária?",
+            "6. A oficina contribuiu para novos conhecimentos sobre o tema Sustentabilidade?",
+            "7. Você indicaria está atividade para um amigo (a)?",
+            "8. A carga horária foi suficiente?",
+            "9. Após está oficina, a imagem que eu tenho da Vale?",
+            "10. De 0 a 10 qual a sua avaliação geral na Oficina?",
+            "11. Depoimento e Sugestões:"
+        ]
+    }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarDados();
 
-    // Adiciona eventos aos filtros para atualizar o dashboard quando mudarem
     document.getElementById('filtro-perfil').addEventListener('change', atualizarDashboard);
     document.getElementById('filtro-oficina').addEventListener('change', atualizarDashboard);
     document.getElementById('filtro-regional').addEventListener('change', atualizarDashboard);
@@ -16,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function carregarDados() {
     try {
-        // Faz a requisição GET para a sua planilha
         const response = await fetch(URL_API_GOOGLE);
         dadosCompletos = await response.json();
         
@@ -28,13 +192,11 @@ async function carregarDados() {
         
     } catch (error) {
         console.error("Erro ao carregar dados:", error);
-        document.getElementById('loading-msg').textContent = "⚠️ Erro ao carregar os dados. Verifique a conexão ou a URL do script.";
+        document.getElementById('loading-msg').textContent = "⚠️ Erro ao carregar os dados. Verifique a ligação ou a URL do script.";
     }
 }
 
 function preencherOpcoesDeFiltro() {
-    // Pega todas as respostas (Professor e Aluno juntos para achar todas as opções)
-    // Desconsidera a linha 0 (cabeçalhos)
     const todasLinhas = [];
     if(dadosCompletos.Professor.length > 1) todasLinhas.push(...dadosCompletos.Professor.slice(1));
     if(dadosCompletos.Aluno.length > 1) todasLinhas.push(...dadosCompletos.Aluno.slice(1));
@@ -44,7 +206,6 @@ function preencherOpcoesDeFiltro() {
     const mesesSet = new Set();
 
     todasLinhas.forEach(linha => {
-        // Coluna A (0): Data | Coluna B (1): Regional | Coluna C (2): Oficina
         const dataInclusao = linha[0];
         const regional = linha[1];
         const oficina = linha[2];
@@ -52,9 +213,8 @@ function preencherOpcoesDeFiltro() {
         if (regional) regionaisSet.add(regional);
         if (oficina) oficinasSet.add(oficina);
         
-        // Extrai o Mês/Ano da data (Ex: "10/05/2026" vira "05/2026")
         if (dataInclusao) {
-            const partesData = dataInclusao.split(' ')[0].split('/'); // Adaptação para formato brasileiro DD/MM/YYYY
+            const partesData = dataInclusao.split(' ')[0].split('/'); 
             if(partesData.length >= 3) {
                 const mesAno = `${partesData[1]}/${partesData[2]}`;
                 mesesSet.add(mesAno);
@@ -87,7 +247,7 @@ function atualizarDashboard() {
     }
 
     const cabecalhos = baseDados[0];
-    let linhasFiltradas = baseDados.slice(1); // Remove os cabeçalhos para filtrar
+    let linhasFiltradas = baseDados.slice(1); 
 
     // Aplicação dos Filtros
     linhasFiltradas = linhasFiltradas.filter(linha => {
@@ -106,50 +266,72 @@ function atualizarDashboard() {
         return passaOficina && passaRegional && passaMes;
     });
 
-    // Atualiza KPI Total
     document.getElementById('total-respostas').textContent = linhasFiltradas.length;
 
-    // Limpa a área de gráficos antigos
     const areaGraficos = document.getElementById('area-graficos');
     areaGraficos.innerHTML = '';
     graficosAtivos.forEach(grafico => grafico.destroy());
     graficosAtivos = [];
 
-    // Se não tiver dados, não desenha gráficos
     if (linhasFiltradas.length === 0) return;
 
-    // A partir da coluna 3 (índice 3) estão as perguntas
+    // A partir da coluna 3 (índice 3) estão as perguntas na folha de cálculo
     for (let colIndex = 3; colIndex < cabecalhos.length; colIndex++) {
-        const pergunta = cabecalhos[colIndex];
         
-        // Ignora a pergunta de recado/texto livre
-        if (pergunta.toLowerCase().includes('recado') || pergunta.toLowerCase().includes('depoimento')) {
+        const indexPergunta = colIndex - 3; 
+        
+        // Define qual lista de títulos usar
+        let titulosAtuais = [];
+        if (oficinaSelecionada !== "Todas" && dicionarioPerguntas[oficinaSelecionada]) {
+            titulosAtuais = dicionarioPerguntas[oficinaSelecionada][perfilSelecionado];
+        }
+
+        let pergunta = cabecalhos[colIndex];
+        
+        if (titulosAtuais && titulosAtuais[indexPergunta]) {
+            pergunta = titulosAtuais[indexPergunta];
+        } else if (oficinaSelecionada !== "Todas") {
             continue;
         }
 
-        // Conta as respostas desta coluna específica
+        // --- FILTRO ABRANGENTE DE CAMPOS DE TEXTO LIVRE ---
+        const pLower = pergunta.toLowerCase();
+        if (pLower.includes('recado') || 
+            pLower.includes('depoimento') || 
+            pLower.includes('sugestões') || 
+            pLower.includes('justifique') || 
+            pLower.includes('conte para nós') || 
+            pLower.includes('o que achou') ||
+            pLower.includes('como?')) {
+            continue;
+        }
+
         const contagemRespostas = {};
         linhasFiltradas.forEach(linha => {
-            let resposta = linha[colIndex] || "Não Respondido";
+            let resposta = linha[colIndex] ? linha[colIndex].trim() : "";
             
-            // Trata múltiplas escolhas separadas por vírgula (Checkbox)
-            if (resposta.includes(',')) {
-                resposta.split(',').forEach(item => {
-                    const r = item.trim();
-                    contagemRespostas[r] = (contagemRespostas[r] || 0) + 1;
-                });
-            } else {
-                contagemRespostas[resposta] = (contagemRespostas[resposta] || 0) + 1;
+            if (resposta !== "") {
+                if (resposta.includes(',')) { 
+                    resposta.split(',').forEach(item => {
+                        const r = item.trim();
+                        contagemRespostas[r] = (contagemRespostas[r] || 0) + 1;
+                    });
+                } else {
+                    contagemRespostas[resposta] = (contagemRespostas[resposta] || 0) + 1;
+                }
             }
         });
 
-        // Prepara elementos na tela
+        if (Object.keys(contagemRespostas).length === 0) {
+            continue; 
+        }
+
         const divBox = document.createElement('div');
         divBox.className = 'grafico-box';
         
         const h3 = document.createElement('div');
         h3.className = 'grafico-titulo';
-        h3.textContent = pergunta;
+        h3.textContent = pergunta; 
         
         const canvasContainer = document.createElement('div');
         canvasContainer.className = 'canvas-container';
@@ -160,11 +342,9 @@ function atualizarDashboard() {
         divBox.appendChild(canvasContainer);
         areaGraficos.appendChild(divBox);
 
-        // Prepara dados para o Chart.js
         const labels = Object.keys(contagemRespostas);
         const values = Object.values(contagemRespostas);
         
-        // Se a pergunta for escala numérica, usa gráfico de barras, se for texto, usa pizza/rosca
         const ehNota = labels.some(l => !isNaN(parseInt(l)) && l.length <= 2);
         const tipoGrafico = ehNota ? 'bar' : 'doughnut';
 
@@ -173,7 +353,6 @@ function atualizarDashboard() {
             '#264653', '#8ab17d', '#babb74', '#e2c044', '#1d3557'
         ];
 
-        // Cria o Gráfico
         const novoGrafico = new Chart(canvas, {
             type: tipoGrafico,
             data: {
@@ -190,7 +369,7 @@ function atualizarDashboard() {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: tipoGrafico !== 'bar', // Esconde legenda em gráfico de barra
+                        display: tipoGrafico !== 'bar', 
                         position: 'bottom',
                         labels: { boxWidth: 12, font: { size: 11 } }
                     }
