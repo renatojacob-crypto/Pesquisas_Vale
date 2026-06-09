@@ -160,7 +160,7 @@ const perguntasSustProfessor = [
     { id: 'prof_q2', texto: '2. Capacidade de gerar interesse e esclarecimento de dúvidas:', tipo: 'radio', opcoes: opcoesOtimoBomRegularRuim },
     { id: 'prof_q3', texto: '3. Didática nos desafios para desenvolver a oficina:', tipo: 'radio', opcoes: opcoesOtimoBomRegularRuim },
     { id: 'prof_q4', texto: '4. É a primeira experiência com a Vale?', tipo: 'radio', opcoes: opcoesSimNao },
-    { id: 'prof_q5', texto: '5. A oficina trouxe novos conhecimentos sobre a mineração e sua importância em nossa vida diária?', tipo: 'radio', opcoesSimNaoPartes },
+    { id: 'prof_q5', texto: '5. A oficina trouxe novos conhecimentos sobre a mineração e sua importância em nossa vida diária?', tipo: 'radio', opcoes: opcoesSimNaoPartes },
     { id: 'prof_q6', texto: '6. A iniciativa contribui e complementa a proposta pedagógica da escola?', tipo: 'radio', opcoes: opcoesSimNaoPartes },
     { id: 'prof_q7', texto: '7. Você acredita que essa experiência contribuiu de alguma forma para o desenvolvimento do aluno? ', tipo: 'radio', opcoes: opcoesSimNao },
     { id: 'prof_q8', texto: '8. Você indicaria a oficina para outra escola/professor? ', tipo: 'radio', opcoes: opcoesSimNao },
