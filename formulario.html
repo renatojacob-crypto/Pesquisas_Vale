@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesquisa: Oficina de Robótica - Pelotização</title>
+    <title>Pesquisa de Satisfação</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="portal-header">
         <div class="header-content">
             <h1>Avaliação da Oficina</h1>
-            <p>Robótica - Pelotização Vale</p>
+            <p id="titulo-oficina">Carregando...</p>
         </div>
     </header>
 
@@ -19,7 +19,13 @@
             <a href="index.html" class="btn-voltar">← Voltar ao Portal</a>
         </div>
 
-        <div class="form-group animate-fade profile-selector">
+        <div id="seletor-regional-container" class="form-group animate-fade profile-selector hidden">
+            <label>Em qual Regional ocorreu esta oficina?</label>
+            <div class="profile-radio-group" id="opcoes-regional">
+                </div>
+        </div>
+
+        <div class="form-group animate-fade profile-selector" id="seletor-perfil-container">
             <label>Selecione seu Perfil:</label>
             <div class="profile-radio-group">
                 <label class="profile-radio">
@@ -49,9 +55,9 @@
             <div class="icon-success">✓</div>
             <h3>Obrigado pela sua participação!</h3>
             <p>Suas respostas são muito importantes para nós e foram registradas com sucesso.</p>
-            <button id="btn-reiniciar" class="card-btn">Responder Novamente</button>
+            <button id="btn-reiniciar" class="card-btn" onclick="window.location.href='index.html'">Voltar ao Início</button>
         </div>
     </main>
-    <script src="pelotizacao.js"></script>
+    <script src="formulario.js"></script>
 </body>
 </html>

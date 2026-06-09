@@ -1,32 +1,9 @@
 const oficinas = [
-    {
-        id: 'oficina_pelotizacao',
-        icone: '⚙️',
-        titulo: 'Robótica - Pelotização',
-        descricao: 'Avaliação da oficina de introdução à robótica educacional com foco nos processos de pelotização.',
-        link: 'pelotizacao.html'
-    },
-    {
-        id: 'oficina_vincibot',
-        icone: '🏎️',
-        titulo: 'Lógica com VinciBot',
-        descricao: 'Feedback das atividades de pensamento computacional e programação em blocos (Scratch).',
-        link: '#'
-    },
-    {
-        id: 'oficina_esg',
-        icone: '🌱',
-        titulo: 'ESG e Sustentabilidade',
-        descricao: 'Avaliação da oficina com foco em impactos ambientais e sustentabilidade nas operações.',
-        link: '#'
-    },
-    {
-        id: 'oficina_zmaker',
-        icone: '🛠️',
-        titulo: 'ZMaker Lab',
-        descricao: 'Pesquisa de satisfação focada em ideação, prototipagem e desenvolvimento de projetos.',
-        link: '#'
-    }
+    { id: 'pelotizacao', icone: '🟤🚢', titulo: 'Robótica - Pelotização', descricao: 'Regional Vitória' },
+    { id: 'logistica', icone: '🛤️🚆', titulo: 'Robótica - Logística', descricao: 'Regional Governador Valadares' },
+    { id: 'mineracao', icone: '⛏️🚞', titulo: 'Robótica - Mineração', descricao: 'Regional Itabira' },
+    { id: 'paebm', icone: '🪧⛔', titulo: 'Robótica/Maker - PAEBM', descricao: 'Regional Itabira' },
+    { id: 'sustentabilidade', icone: '🌳♻️', titulo: 'StoryStarter - Sustentabilidade', descricao: 'Múltiplas Regionais (Vitória, Gov. Valadares ou Itabira)' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -47,11 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         card.onclick = () => {
-            if(oficina.link !== '#') {
-                window.location.href = oficina.link;
-            } else {
-                alert(`Você selecionou a oficina: ${oficina.titulo}.\\n\\nEsta página ainda será criada.`);
-            }
+            window.location.href = `formulario.html?oficina=${oficina.id}`;
         };
 
         container.appendChild(card);
