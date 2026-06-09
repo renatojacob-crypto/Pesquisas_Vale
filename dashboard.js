@@ -383,3 +383,74 @@ function atualizarDashboard() {
         graficosAtivos.push(novoGrafico);
     }
 }
+// --- NOVAS FUNÇÕES: GERAR PDF E ENVIAR POR E-MAIL ---
+
+// Opções de configuração do PDF
+const opcoesPDF = {
+    margin:       10,
+    filename:     'Dashboard_Oficinas_Vale.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' } // Paisagem para caberem bem os gráficos
+};
+
+// 1. Função que apenas baixa o PDF para o computador
+function exportarPDF() {
+    const btn = document.getElementById('btn-gerar-pdf');
+    btn.textContent = '⏳ A gerar...';
+    btn.disabled = true;
+
+    const elementoParaPDF = document.getElementById('dashboard-content');
+
+    html2pdf().set(opcoesPDF).from(elementoParaPDF).save().then(() => {
+        btn.textContent = '📄 Exportar PDF';
+        btn.disabled = false;
+    });
+}
+
+// 2. Função que gera o PDF em "segredo" e envia via POST para o Google Apps Script mandar por e-mail
+async function enviarPorEmail() {
+    const emailDestino = document.getElementById('input-email').value;
+    const btn = document.getElementById('btn-enviar-email');
+
+    // Validação simples de e-mail
+    if (!emailDestino || !emailDestino.includes('@')) {
+        alert("Por favor, digite um e-mail válido.");
+        return;
+    }
+
+    btn.textContent = '⏳ A preparar e-mail...';
+    btn.disabled = true;
+
+    try {
+        const elementoParaPDF = document.getElementById('dashboard-content');
+        
+        // Em vez de '.save()', usamos '.output()' para obter o ficheiro em formato de código (Base64)
+        const pdfBase64 = await html2pdf().set(opcoesPDF).from(elementoParaPDF).output('datauristring');
+        
+        // Extrai apenas o código base64 puro (removendo o prefixo data:application/pdf;base64,)
+        const base64Limpo = pdfBase64.split(',')[1];
+
+        // Envia para o nosso Google Apps Script
+        const response = await fetch(URL_API_GOOGLE, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ 
+                action: "enviarEmail", // Avisa o Script que não é para gravar na folha de cálculo
+                email: emailDestino, 
+                pdfData: base64Limpo 
+            })
+        });
+
+        alert(`Sucesso! O Dashboard foi enviado em anexo para o e-mail: ${emailDestino}`);
+        document.getElementById('input-email').value = ''; // Limpa o campo
+
+    } catch (error) {
+        console.error("Erro ao enviar e-mail:", error);
+        alert("Ocorreu um erro ao tentar enviar o e-mail.");
+    } finally {
+        btn.textContent = '✉️ Enviar por E-mail';
+        btn.disabled = false;
+    }
+}
