@@ -408,12 +408,11 @@ function exportarPDF() {
     });
 }
 
-// 2. Função que gera o PDF em "segredo" e envia via POST para o Google Apps Script mandar por e-mail
+// 2. Função que gera o PDF e envia via POST para o Google Apps Script mandar por e-mail
 async function enviarPorEmail() {
     const emailDestino = document.getElementById('input-email').value;
     const btn = document.getElementById('btn-enviar-email');
 
-    // Validação simples de e-mail
     if (!emailDestino || !emailDestino.includes('@')) {
         alert("Por favor, digite um e-mail válido.");
         return;
@@ -425,30 +424,27 @@ async function enviarPorEmail() {
     try {
         const elementoParaPDF = document.getElementById('dashboard-content');
         
-        // Em vez de '.save()', usamos '.output()' para obter o ficheiro em formato de código (Base64)
-        const pdfBase64 = await html2pdf().set(opcoesPDF).from(elementoParaPDF).output('datauristring');
-        
-        // Extrai apenas o código base64 puro (removendo o prefixo data:application/pdf;base64,)
+        // Forma mais segura de extrair o Base64 usando a biblioteca
+        const pdfBase64 = await html2pdf().set(opcoesPDF).from(elementoParaPDF).outputPdf('datauristring');
         const base64Limpo = pdfBase64.split(',')[1];
 
-        // Envia para o nosso Google Apps Script
         const response = await fetch(URL_API_GOOGLE, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({ 
-                action: "enviarEmail", // Avisa o Script que não é para gravar na folha de cálculo
+                action: "enviarEmail", 
                 email: emailDestino, 
                 pdfData: base64Limpo 
             })
         });
 
         alert(`Sucesso! O Dashboard foi enviado em anexo para o e-mail: ${emailDestino}`);
-        document.getElementById('input-email').value = ''; // Limpa o campo
+        document.getElementById('input-email').value = ''; 
 
     } catch (error) {
         console.error("Erro ao enviar e-mail:", error);
-        alert("Ocorreu um erro ao tentar enviar o e-mail.");
+        alert("Ocorreu um erro ao tentar gerar ou enviar o PDF.");
     } finally {
         btn.textContent = '✉️ Enviar por E-mail';
         btn.disabled = false;
