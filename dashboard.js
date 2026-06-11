@@ -86,7 +86,7 @@ const dicionarioPerguntas = {
             "10. A oficina esclareceu o funcionamento dos controles ambientais aplicados no processo produtivo?",
             "11. Após está oficina, a imagem que eu tenho da Vale:",
             "12. De 0 a 10 qual a sua avaliação geral na Oficina:",
-            "13. Dê o sei Depoimento e/ou Sugestões:"
+            "13. Dê o seu Depoimento e/ou Sugestões:"
         ],
         Aluno: [
             "1. Sua opinião sobre a Roda de Conversa (Domínio, Clareza e Objetividade):",
@@ -100,7 +100,7 @@ const dicionarioPerguntas = {
             "9. Após está oficina, a imagem que eu tenho da Vale?",
             "10. Você entende que o conhecimento compartilhado nessa experiência pode agregar e contribuir com o conteúdo de sala de aula? Como?",
             "11. De 0 a 10 qual a sua avaliação geral na Oficina:",
-            "12. Dê o sei Depoimento e/ou Sugestões:"
+            "12. Dê o seu Depoimento e/ou Sugestões:"
         ]
     },
     "Robótica/Maker - PAEBM": {
@@ -192,7 +192,7 @@ async function carregarDados() {
         
     } catch (error) {
         console.error("Erro ao carregar dados:", error);
-        document.getElementById('loading-msg').textContent = "⚠️ Erro ao carregar os dados. Verifique a ligação ou a URL do script.";
+        document.getElementById('loading-msg').textContent = "⚠️ Erro ao carregar os dados. Verifique a conexão.";
     }
 }
 
@@ -249,7 +249,6 @@ function atualizarDashboard() {
     const cabecalhos = baseDados[0];
     let linhasFiltradas = baseDados.slice(1); 
 
-    // Aplicação dos Filtros
     linhasFiltradas = linhasFiltradas.filter(linha => {
         const dataLinha = linha[0] || "";
         const regLinha = linha[1] || "";
@@ -275,26 +274,31 @@ function atualizarDashboard() {
 
     if (linhasFiltradas.length === 0) return;
 
+    // --- PROTEÇÃO DE DADOS MISTURADOS ---
+    if (oficinaSelecionada === "Todas") {
+        areaGraficos.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #fff; border-radius: 8px; border: 1px dashed #007f5f;">
+                <h3 style="color: var(--primary-color); margin-bottom: 10px;">Selecione uma Oficina</h3>
+                <p style="color: #555;">Como cada oficina possui perguntas diferentes, selecione uma <b>Oficina específica</b> no filtro acima para visualizar os gráficos e títulos corretos.</p>
+            </div>
+        `;
+        return; 
+    }
+
     // A partir da coluna 3 (índice 3) estão as perguntas na folha de cálculo
     for (let colIndex = 3; colIndex < cabecalhos.length; colIndex++) {
-        
         const indexPergunta = colIndex - 3; 
         
-        // Define qual lista de títulos usar
-        let titulosAtuais = [];
-        if (oficinaSelecionada !== "Todas" && dicionarioPerguntas[oficinaSelecionada]) {
-            titulosAtuais = dicionarioPerguntas[oficinaSelecionada][perfilSelecionado];
-        }
-
+        let titulosAtuais = dicionarioPerguntas[oficinaSelecionada] ? dicionarioPerguntas[oficinaSelecionada][perfilSelecionado] : null;
         let pergunta = cabecalhos[colIndex];
         
         if (titulosAtuais && titulosAtuais[indexPergunta]) {
             pergunta = titulosAtuais[indexPergunta];
-        } else if (oficinaSelecionada !== "Todas") {
+        } else {
+            // Se não encontrou o título exato, ignora esta coluna (pertence a outra oficina)
             continue;
         }
 
-        // --- FILTRO ABRANGENTE DE CAMPOS DE TEXTO LIVRE ---
         const pLower = pergunta.toLowerCase();
         if (pLower.includes('recado') || 
             pLower.includes('depoimento') || 
@@ -383,32 +387,56 @@ function atualizarDashboard() {
         graficosAtivos.push(novoGrafico);
     }
 }
-// --- NOVAS FUNÇÕES: GERAR PDF E ENVIAR POR E-MAIL ---
 
 // Opções de configuração do PDF
 const opcoesPDF = {
-    margin:       10,
+    margin:       [15, 10, 10, 10], // Margem superior maior para o título
     filename:     'Dashboard_Oficinas_Vale.pdf',
     image:        { type: 'jpeg', quality: 0.98 },
     html2canvas:  { scale: 2, useCORS: true },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' } // Paisagem para caberem bem os gráficos
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' },
+    pagebreak:    { mode: ['css', 'legacy'], avoid: '.grafico-box' }
 };
 
-// 1. Função que apenas baixa o PDF para o computador
 function exportarPDF() {
     const btn = document.getElementById('btn-gerar-pdf');
     btn.textContent = '⏳ A gerar...';
     btn.disabled = true;
 
     const elementoParaPDF = document.getElementById('dashboard-content');
+    elementoParaPDF.classList.add('exportando-pdf');
 
-    html2pdf().set(opcoesPDF).from(elementoParaPDF).save().then(() => {
-        btn.textContent = '📄 Exportar PDF';
-        btn.disabled = false;
-    });
+    const oficinaSelecionada = document.getElementById('filtro-oficina').value;
+    const perfilSelecionado = document.getElementById('filtro-perfil').value;
+    const mesSelecionado = document.getElementById('filtro-mes').value;
+
+    const tituloPDF = document.createElement('div');
+    tituloPDF.style.textAlign = 'center';
+    tituloPDF.style.marginBottom = '25px';
+    tituloPDF.style.fontFamily = 'Arial, sans-serif';
+    tituloPDF.innerHTML = `
+        <h2 style="color: #007f5f; margin-bottom: 8px;">Relatório de Avaliação - Oficinas Vale</h2>
+        <p style="color: #555; font-size: 15px; margin: 0;">
+            <strong>Oficina:</strong> ${oficinaSelecionada} &nbsp;|&nbsp; 
+            <strong>Perfil:</strong> ${perfilSelecionado} &nbsp;|&nbsp; 
+            <strong>Período:</strong> ${mesSelecionado}
+        </p>
+        <hr style="border: none; border-top: 1px solid #dfe2e6; margin-top: 15px;">
+    `;
+    
+    elementoParaPDF.insertBefore(tituloPDF, elementoParaPDF.firstChild);
+
+    // Pequeno atraso para garantir que o navegador "desenhou" os títulos corretamente
+    setTimeout(() => {
+        html2pdf().set(opcoesPDF).from(elementoParaPDF).save().then(() => {
+            elementoParaPDF.classList.remove('exportando-pdf');
+            tituloPDF.remove();
+            btn.textContent = '📄 Exportar PDF';
+            btn.disabled = false;
+        });
+    }, 150);
 }
 
-// 2. Função que gera o PDF e envia via POST para o Google Apps Script mandar por e-mail
 async function enviarPorEmail() {
     const emailDestino = document.getElementById('input-email').value;
     const btn = document.getElementById('btn-enviar-email');
@@ -423,29 +451,69 @@ async function enviarPorEmail() {
 
     try {
         const elementoParaPDF = document.getElementById('dashboard-content');
+        elementoParaPDF.classList.add('exportando-pdf');
         
-        // Forma mais segura de extrair o Base64 usando a biblioteca
-        const pdfBase64 = await html2pdf().set(opcoesPDF).from(elementoParaPDF).outputPdf('datauristring');
-        const base64Limpo = pdfBase64.split(',')[1];
+        const oficinaSelecionada = document.getElementById('filtro-oficina').value;
+        const perfilSelecionado = document.getElementById('filtro-perfil').value;
+        const mesSelecionado = document.getElementById('filtro-mes').value;
 
-        const response = await fetch(URL_API_GOOGLE, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ 
-                action: "enviarEmail", 
-                email: emailDestino, 
-                pdfData: base64Limpo 
-            })
-        });
+        const tituloPDF = document.createElement('div');
+        tituloPDF.style.textAlign = 'center';
+        tituloPDF.style.marginBottom = '25px';
+        tituloPDF.style.fontFamily = 'Arial, sans-serif';
+        tituloPDF.innerHTML = `
+            <h2 style="color: #007f5f; margin-bottom: 8px;">Relatório de Avaliação - Oficinas Vale</h2>
+            <p style="color: #555; font-size: 15px; margin: 0;">
+                <strong>Oficina:</strong> ${oficinaSelecionada} &nbsp;|&nbsp; 
+                <strong>Perfil:</strong> ${perfilSelecionado} &nbsp;|&nbsp; 
+                <strong>Período:</strong> ${mesSelecionado}
+            </p>
+            <hr style="border: none; border-top: 1px solid #dfe2e6; margin-top: 15px;">
+        `;
+        
+        elementoParaPDF.insertBefore(tituloPDF, elementoParaPDF.firstChild);
 
-        alert(`Sucesso! O Dashboard foi enviado em anexo para o e-mail: ${emailDestino}`);
-        document.getElementById('input-email').value = ''; 
+        // Atraso antes de gerar o Base64 do PDF
+        setTimeout(async () => {
+            try {
+                const pdfBase64 = await html2pdf().set(opcoesPDF).from(elementoParaPDF).outputPdf('datauristring');
+                
+                elementoParaPDF.classList.remove('exportando-pdf');
+                tituloPDF.remove();
+                
+                const base64Limpo = pdfBase64.split(',')[1];
+
+                const response = await fetch(URL_API_GOOGLE, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ 
+                        action: "enviarEmail", 
+                        email: emailDestino, 
+                        pdfData: base64Limpo 
+                    })
+                });
+
+                alert(`Sucesso! O Dashboard foi enviado em anexo para o e-mail: ${emailDestino}`);
+                document.getElementById('input-email').value = ''; 
+            } catch (innerError) {
+                console.error("Erro interno ao gerar PDF:", innerError);
+                alert("Falha ao gerar o PDF. Tente novamente.");
+            } finally {
+                btn.textContent = '✉️ Enviar por E-mail';
+                btn.disabled = false;
+            }
+        }, 150);
 
     } catch (error) {
         console.error("Erro ao enviar e-mail:", error);
         alert("Ocorreu um erro ao tentar gerar ou enviar o PDF.");
-    } finally {
+        
+        const elementoParaPDF = document.getElementById('dashboard-content');
+        elementoParaPDF.classList.remove('exportando-pdf');
+        if (elementoParaPDF.firstChild && elementoParaPDF.firstChild.tagName && elementoParaPDF.firstChild.tagName.toLowerCase() === 'div') {
+             elementoParaPDF.firstChild.remove();
+        }
         btn.textContent = '✉️ Enviar por E-mail';
         btn.disabled = false;
     }

@@ -32,11 +32,41 @@
         .kpi-valor { font-size: 36px; font-weight: bold; margin-top: 10px; }
         
         .graficos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; }
-        .grafico-box { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; }
+        .grafico-box { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            
+            /* Previne a quebra de página no meio do elemento */
+            page-break-inside: avoid; 
+            break-inside: avoid; 
+        }
         .grafico-titulo { font-size: 14px; font-weight: 600; margin-bottom: 15px; text-align: center; color: #333; min-height: 40px; width: 100%; }
         .canvas-container { width: 100%; height: 250px; position: relative; }
         
         #loading-msg { text-align: center; font-size: 18px; color: var(--primary-color); font-weight: bold; margin: 40px 0; }
+        
+        /* --- CORREÇÃO DEFINITIVA DE QUEBRA DE PÁGINA PARA O PDF --- */
+        /* --- CORREÇÃO DEFINITIVA DE QUEBRA DE PÁGINA PARA O PDF --- */
+        .exportando-pdf .graficos-grid {
+            display: flex !important; 
+            flex-wrap: wrap !important;
+            gap: 20px !important;
+            align-items: flex-start !important;
+        }
+
+        .exportando-pdf .grafico-box {
+            width: calc(50% - 10px) !important; /* Mantém 2 por linha com espaçamento correto */
+            display: flex !important; /* Devolve a organização correta interna */
+            flex-direction: column !important; /* Título em cima, gráfico em baixo */
+            margin: 0 !important; 
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
         
         /* Oculta os botões de ação na hora de imprimir o PDF */
         .html2pdf__container .acoes-bar, .html2pdf__container .nav-back { display: none !important; }
